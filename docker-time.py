@@ -1,19 +1,33 @@
 """ Searches docker binaries and edits the timestamp """
-from optparse import OptionParser
+import os
+import sys
+import argparse
+
+
+ONE_GB = 1024*1024*1024
+
+
+def readFile(infile):
+    if os.stat(infile).st_size > ONE_GB:
+        print "File size too big...exiting"
+        sys.exit(0)
+ 
+    with open(infile, 'r') as f:
+        f_chars = f.read()
+        f.close()
+
+    return f_chars
+        
 
 def main():
-    parser = OptionParser(usage="usage %prog [options] filename")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('infile',
+                        help="Input file to search for timestamp")
+    args = parser.parse_args()
 
-    parser.add_option("-f", "--file",
-                      action="store_true",
-                      dest="docker_file",
-                      default=False,
-                      help="read in the docker binary file for timestamp modification")
-
-    (options, args) = parser.parse_args()
-
-    if len(args) != 1:
-        parser.error("wrong number of arguments")
+    f_chars = readFile(args.infile)
+    for i in range(10):
+        print f_chars[i]
 
 
 if __name__ == '__main__':
