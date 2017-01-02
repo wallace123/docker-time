@@ -3,6 +3,7 @@ import os
 import sys
 import argparse
 import re
+from datetime import datetime
 
 
 ONE_GB = 1024*1024*1024
@@ -21,8 +22,10 @@ def readFile(infile):
 
 
 def subTimeStamp(instr):
-    # Timestamp example: 2016-12-16T02:42:17.070078439+00:00
-    regExpr = r'2016-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\d\d\d\d\d\d\+\d\d:\d\d'
+    # Docker timestamp example: 2016-12-16T02:42:17.070078439+00:00
+    # regExpr timestamp is reduced due to python datetime module
+    # only going to 6 places in the millisecond field
+    regExpr = r'2016-\d\d-\d\dT\d\d:\d\d:\d\d\.\d\d\d\d\d\d'
     searchObj = re.search(regExpr, 
                           instr,
                           re.M|re.I)
@@ -33,8 +36,10 @@ def subTimeStamp(instr):
         print "Timestamp not found"
         sys.exit(0)
 
+    new_timestamp = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")
+
     outstr = re.sub(regExpr,
-                    r'2016-01-01T00:00:00.000000000+00:00',
+                    new_timestamp,
                     instr)
 
     return outstr
